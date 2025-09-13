@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QuestionGroup } from './forms/QuestionGroup';
 import { ResultsPage } from './ResultsPage';
 import { Button } from './ui/Button';
@@ -14,6 +14,11 @@ export function PersonalityTest() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [result, setResult] = useState<PersonalityResult | null>(null);
+
+  // ステップ変更時に画面上部にスクロール
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
   
   // ページング設定
   const QUESTIONS_PER_PAGE = 5;
@@ -132,7 +137,10 @@ export function PersonalityTest() {
                 <Button
                   size="lg"
                   className="w-full"
-                  onClick={() => setCurrentStep('test')}
+                  onClick={() => {
+                    setCurrentPageIndex(0);
+                    setCurrentStep('test');
+                  }}
                 >
                   スクリーニングを開始する
                 </Button>

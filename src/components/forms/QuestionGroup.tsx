@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Card, CardContent } from '../ui/Card';
 import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
 import { Button } from '../ui/Button';
@@ -19,13 +20,13 @@ interface QuestionGroupProps {
 }
 
 const answerOptions = [
-  { value: 3, label: 'とてもそう思う', shortLabel: 'とてもそう思う', size: 'large', variant: 'green' },
-  { value: 2, label: 'ややそう思う', shortLabel: 'ややそう思う', size: 'medium', variant: 'green' },
-  { value: 1, label: 'そう思う', shortLabel: 'そう思う', size: 'small', variant: 'green' },
-  { value: 0, label: 'どちらでもない', shortLabel: '分からない', size: 'neutral', variant: 'neutral' },
-  { value: -1, label: 'そう思わない', shortLabel: 'そう思わない', size: 'small', variant: 'purple' },
-  { value: -2, label: 'あまりそう思わない', shortLabel: 'あまりそう思わない', size: 'medium', variant: 'purple' },
   { value: -3, label: 'まったくそう思わない', shortLabel: 'まったくそう思わない', size: 'large', variant: 'purple' },
+  { value: -2, label: 'あまりそう思わない', shortLabel: 'あまりそう思わない', size: 'medium', variant: 'purple' },
+  { value: -1, label: 'そう思わない', shortLabel: 'そう思わない', size: 'small', variant: 'purple' },
+  { value: 0, label: 'どちらでもない', shortLabel: '分からない', size: 'neutral', variant: 'neutral' },
+  { value: 1, label: 'そう思う', shortLabel: 'そう思う', size: 'small', variant: 'green' },
+  { value: 2, label: 'ややそう思う', shortLabel: 'ややそう思う', size: 'medium', variant: 'green' },
+  { value: 3, label: 'とてもそう思う', shortLabel: 'とてもそう思う', size: 'large', variant: 'green' },
 ] as const;
 
 export function QuestionGroup({
@@ -39,6 +40,11 @@ export function QuestionGroup({
   canGoNext,
   canGoPrevious,
 }: QuestionGroupProps) {
+  // ページ変更時に画面の上部にスクロール
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   // 指定した質問の回答を取得
   const getAnswerForQuestion = (questionId: number): AnswerValue | undefined => {
     const answer = answers.find(a => a.questionId === questionId);
@@ -87,8 +93,8 @@ export function QuestionGroup({
                   {/* Answer Options with 16personalities design */}
                   <div className="max-w-4xl mx-auto">
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-8 px-8">
-                      <span>そう思う</span>
                       <span>そう思わない</span>
+                      <span>そう思う</span>
                     </div>
                     
                     <RadioGroup
