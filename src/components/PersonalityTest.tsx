@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { QuestionCard } from './forms/QuestionCard';
 import { ResultsPage } from './ResultsPage';
 import { Button } from './ui/Button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/Card';
+import { Card, CardContent, CardTitle, CardDescription } from './ui/Card';
 import { questions } from '../data/questions';
 import { Answer, PersonalityResult } from '../types';
 

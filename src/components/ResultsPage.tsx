@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/Card';
 import { Progress } from './ui/Progress';

@@ -1,10 +1,8 @@
-import React from 'react';
 import { Card, CardContent } from '../ui/Card';
 import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
 import { Question } from '../../types/index';
 
 type AnswerValue = -3 | -2 | -1 | 0 | 1 | 2 | 3;
-import { cn } from '../../utils/cn';
 
 interface QuestionCardProps {
   question: Question;
@@ -15,13 +13,13 @@ interface QuestionCardProps {
 }
 
 const answerOptions = [
-  { value: -3, label: 'まったくそう思わない', shortLabel: '全く思わない' },
-  { value: -2, label: 'あまりそう思わない', shortLabel: '思わない' },
-  { value: -1, label: 'そう思わない', shortLabel: '少し思わない' },
-  { value: 0, label: 'どちらでもない', shortLabel: '分からない' },
-  { value: 1, label: 'そう思う', shortLabel: '少し思う' },
-  { value: 2, label: 'ややそう思う', shortLabel: '思う' },
-  { value: 3, label: 'とてもそう思う', shortLabel: '強く思う' },
+  { value: 3, label: 'とてもそう思う', shortLabel: 'とてもそう思う', size: 'large', variant: 'green' },
+  { value: 2, label: 'ややそう思う', shortLabel: 'ややそう思う', size: 'medium', variant: 'green' },
+  { value: 1, label: 'そう思う', shortLabel: 'そう思う', size: 'small', variant: 'green' },
+  { value: 0, label: 'どちらでもない', shortLabel: '分からない', size: 'neutral', variant: 'neutral' },
+  { value: -1, label: 'そう思わない', shortLabel: 'そう思わない', size: 'small', variant: 'purple' },
+  { value: -2, label: 'あまりそう思わない', shortLabel: 'あまりそう思わない', size: 'medium', variant: 'purple' },
+  { value: -3, label: 'まったくそう思わない', shortLabel: 'まったくそう思わない', size: 'large', variant: 'purple' },
 ] as const;
 
 export function QuestionCard({
@@ -57,54 +55,36 @@ export function QuestionCard({
             </div>
 
             {/* Answer Options */}
-            <div className="max-w-2xl mx-auto">
-              <div className="flex items-center justify-between text-sm text-gray-600 mb-6">
-                <span>そう思わない</span>
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center justify-between text-sm text-gray-500 mb-8 px-8">
                 <span>そう思う</span>
+                <span>そう思わない</span>
               </div>
               
               <RadioGroup
                 value={value?.toString()}
                 onValueChange={(val) => onValueChange(parseInt(val) as AnswerValue)}
-                className="flex justify-between items-center"
+                className="mb-6"
               >
                 {answerOptions.map((option) => (
-                  <div key={option.value} className="flex flex-col items-center space-y-2">
-                    <div className="relative">
-                      <RadioGroupItem
-                        value={option.value.toString()}
-                        id={`option-${option.value}`}
-                        className={cn(
-                          'w-8 h-8 border-2 transition-all duration-200',
-                          value === option.value
-                            ? 'border-blue-600 bg-blue-600'
-                            : 'border-gray-300 hover:border-blue-400'
-                        )}
-                      />
-                      {value === option.value && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-3 h-3 bg-white rounded-full" />
-                        </div>
-                      )}
-                    </div>
-                    <label
-                      htmlFor={`option-${option.value}`}
-                      className="text-xs text-gray-600 text-center cursor-pointer leading-tight hidden md:block"
-                    >
-                      {option.shortLabel}
-                    </label>
-                  </div>
+                  <RadioGroupItem
+                    key={option.value}
+                    value={option.value.toString()}
+                    size={option.size as any}
+                    variant={option.variant as any}
+                    aria-label={`${option.label} - ${question.text}`}
+                  />
                 ))}
               </RadioGroup>
 
-              {/* Mobile labels */}
-              <div className="mt-4 md:hidden">
-                {value !== undefined && (
-                  <div className="text-center text-sm text-gray-600">
+              {/* Selected option display */}
+              {value !== undefined && (
+                <div className="text-center">
+                  <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium animate-in fade-in duration-200">
                     選択中: {answerOptions.find(opt => opt.value === value)?.label}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
