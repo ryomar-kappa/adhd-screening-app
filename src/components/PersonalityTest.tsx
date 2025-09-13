@@ -8,12 +8,52 @@ import { Answer, PersonalityResult } from '../types';
 
 import { calculatePersonalityType } from '../utils/scoring';
 import { Header } from './layout/Header';
+import { SEOHead } from './layout/SEOHead';
+import { createMedicalWebPageSchema, createWebsiteSchema, createMedicalTestSchema } from '../utils/structuredData';
 
 export function PersonalityTest() {
   const [currentStep, setCurrentStep] = useState<'intro' | 'test' | 'results'>('intro');
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [result, setResult] = useState<PersonalityResult | null>(null);
+
+  // SEO メタデータを各ステップに応じて設定
+  const getSEOData = () => {
+    switch (currentStep) {
+      case 'intro':
+        return {
+          title: 'ADHD診断・セルフチェック | 無料オンライン診断ツール',
+          description: 'ADHD（注意欠陥多動性障害）の無料セルフチェック診断。DSM-5基準に基づく18項目の質問で症状を評価。専門医監修の信頼できる診断ツールです。',
+          url: 'https://adhd-check.app/',
+          keywords: ['ADHD 診断', 'ADHD チェック', 'セルフチェック', '注意欠陥多動性障害', '無料診断'],
+          structuredData: createWebsiteSchema()
+        };
+      case 'test':
+        return {
+          title: 'ADHD診断テスト | 18項目の詳細チェック',
+          description: 'DSM-5基準に基づくADHD診断テスト。18項目の質問で不注意、多動性、衝動性を評価します。約5分で完了する無料診断。',
+          url: 'https://adhd-check.app/questionnaire',
+          keywords: ['ADHD テスト', 'ADHD 質問', '診断テスト', 'DSM-5'],
+          structuredData: createMedicalTestSchema()
+        };
+      case 'results':
+        return {
+          title: 'ADHD診断結果 | 症状評価と推奨アクション',
+          description: 'ADHD診断テストの結果表示。症状の詳細分析と専門医への相談推奨。個別化された結果レポートをPDFでダウンロード可能。',
+          url: 'https://adhd-check.app/results',
+          keywords: ['ADHD 結果', '診断結果', '専門医相談', '症状分析'],
+          structuredData: createMedicalWebPageSchema('ADHD診断結果', 'ADHD診断テストの詳細結果', 'https://adhd-check.app/results')
+        };
+      default:
+        return {
+          title: 'ADHD診断・セルフチェック',
+          description: 'ADHD症状のセルフチェック診断ツール',
+          url: 'https://adhd-check.app/',
+          keywords: ['ADHD'],
+          structuredData: createWebsiteSchema()
+        };
+    }
+  };
 
   // ステップ変更時に画面上部にスクロール
   useEffect(() => {
@@ -71,12 +111,16 @@ export function PersonalityTest() {
     setResult(null);
   };
 
+  const seoData = getSEOData();
+
   // Intro screen
   if (currentStep === 'intro') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-        <Header />
-        <div className="container mx-auto px-4 py-16">
+      <>
+        <SEOHead {...seoData} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+          <Header />
+          <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
             {/* Logo and title */}
             <div className="mb-8">
@@ -162,6 +206,7 @@ export function PersonalityTest() {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
@@ -169,6 +214,7 @@ export function PersonalityTest() {
   if (currentStep === 'test') {
     return (
       <>
+        <SEOHead {...seoData} />
         <Header />
         <QuestionGroup
           questions={getCurrentPageQuestions()}
@@ -189,6 +235,7 @@ export function PersonalityTest() {
   if (currentStep === 'results' && result) {
     return (
       <>
+        <SEOHead {...seoData} />
         <Header />
         <ResultsPage result={result} onRestart={resetTest} />
       </>
