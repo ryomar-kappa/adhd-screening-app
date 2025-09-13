@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent } from '../ui/Card';
 import { RadioGroup, RadioGroupItem } from '../ui/RadioGroup';
 import { Button } from '../ui/Button';
@@ -20,13 +19,13 @@ interface QuestionGroupProps {
 }
 
 const answerOptions = [
-  { value: -3, label: 'まったくそう思わない', shortLabel: '全く思わない' },
-  { value: -2, label: 'あまりそう思わない', shortLabel: '思わない' },
-  { value: -1, label: 'そう思わない', shortLabel: '少し思わない' },
-  { value: 0, label: 'どちらでもない', shortLabel: '分からない' },
-  { value: 1, label: 'そう思う', shortLabel: '少し思う' },
-  { value: 2, label: 'ややそう思う', shortLabel: '思う' },
-  { value: 3, label: 'とてもそう思う', shortLabel: '強く思う' },
+  { value: 3, label: 'とてもそう思う', shortLabel: 'とてもそう思う', size: 'large', variant: 'green' },
+  { value: 2, label: 'ややそう思う', shortLabel: 'ややそう思う', size: 'medium', variant: 'green' },
+  { value: 1, label: 'そう思う', shortLabel: 'そう思う', size: 'small', variant: 'green' },
+  { value: 0, label: 'どちらでもない', shortLabel: '分からない', size: 'neutral', variant: 'neutral' },
+  { value: -1, label: 'そう思わない', shortLabel: 'そう思わない', size: 'small', variant: 'purple' },
+  { value: -2, label: 'あまりそう思わない', shortLabel: 'あまりそう思わない', size: 'medium', variant: 'purple' },
+  { value: -3, label: 'まったくそう思わない', shortLabel: 'まったくそう思わない', size: 'large', variant: 'purple' },
 ] as const;
 
 export function QuestionGroup({
@@ -41,13 +40,13 @@ export function QuestionGroup({
   canGoPrevious,
 }: QuestionGroupProps) {
   // 指定した質問の回答を取得
-  const getAnswerForQuestion = (questionId: string): AnswerValue | undefined => {
+  const getAnswerForQuestion = (questionId: number): AnswerValue | undefined => {
     const answer = answers.find(a => a.questionId === questionId);
     return answer?.value;
   };
 
   // 質問の回答を更新
-  const updateAnswer = (questionId: string, value: AnswerValue) => {
+  const updateAnswer = (questionId: number, value: AnswerValue) => {
     const updatedAnswers = answers.filter(a => a.questionId !== questionId);
     updatedAnswers.push({ questionId, value });
     onAnswersChange(updatedAnswers);
@@ -55,11 +54,11 @@ export function QuestionGroup({
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full max-w-6xl mx-auto">
         {/* Progress indicator */}
         <div className="mb-8 text-center">
           <div className="text-sm text-gray-600 mb-2">
-            ページ {currentPage}/{totalPages}
+            ページ {currentPage}/{totalPages} ({questions.length * (currentPage - 1) + 1}-{Math.min(questions.length * currentPage, 60)}問 / 60問)
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 max-w-md mx-auto">
             <div
@@ -71,70 +70,51 @@ export function QuestionGroup({
 
         {/* Questions Group */}
         <Card className="mb-8 border-0 shadow-lg">
-          <CardContent className="p-6 md:p-8">
-            <div className="space-y-8">
+          <CardContent className="p-6 md:p-10">
+            <div className="space-y-12">
               {questions.map((question, index) => (
-                <div key={question.id} className="border-b border-gray-100 pb-8 last:border-b-0 last:pb-0">
-                  {/* Question text */}
-                  <div className="mb-6">
-                    <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">
+                <div key={question.id} className="border-b border-gray-100 pb-10 last:border-b-0 last:pb-0">
+                  {/* Question number and text */}
+                  <div className="mb-8 text-center">
+                    <div className="text-sm text-gray-500 mb-2">
+                      質問 {questions.length * (currentPage - 1) + index + 1}
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-medium text-gray-900 leading-relaxed">
                       {question.text}
                     </h3>
                   </div>
 
-                  {/* Answer Options */}
-                  <div className="max-w-xl">
-                    {/* Scale labels */}
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4 px-2">
-                      <span>そう思わない</span>
+                  {/* Answer Options with 16personalities design */}
+                  <div className="max-w-4xl mx-auto">
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-8 px-8">
                       <span>そう思う</span>
+                      <span>そう思わない</span>
                     </div>
                     
                     <RadioGroup
                       value={getAnswerForQuestion(question.id)?.toString() || ''}
                       onValueChange={(val) => updateAnswer(question.id, parseInt(val) as AnswerValue)}
-                      className="flex justify-between items-center gap-2"
+                      className="mb-6"
                     >
-                      {answerOptions.map((option) => {
-                        const isSelected = getAnswerForQuestion(question.id) === option.value;
-                        return (
-                          <div key={option.value} className="flex flex-col items-center space-y-2">
-                            <div className="relative">
-                              <RadioGroupItem
-                                value={option.value.toString()}
-                                id={`q${question.id}-option-${option.value}`}
-                                className={cn(
-                                  'w-6 h-6 md:w-8 md:h-8 border-2 transition-all duration-200 cursor-pointer',
-                                  isSelected
-                                    ? 'border-blue-600 bg-blue-600'
-                                    : 'border-gray-300 hover:border-blue-400'
-                                )}
-                              />
-                              {isSelected && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <div className="w-2 h-2 md:w-3 md:h-3 bg-white rounded-full" />
-                                </div>
-                              )}
-                            </div>
-                            <label
-                              htmlFor={`q${question.id}-option-${option.value}`}
-                              className="text-xs text-gray-600 text-center cursor-pointer leading-tight hidden md:block max-w-16"
-                            >
-                              {option.shortLabel}
-                            </label>
-                          </div>
-                        );
-                      })}
+                      {answerOptions.map((option) => (
+                        <RadioGroupItem
+                          key={option.value}
+                          value={option.value.toString()}
+                          size={option.size as any}
+                          variant={option.variant as any}
+                          aria-label={`${option.label} - ${question.text}`}
+                        />
+                      ))}
                     </RadioGroup>
 
-                    {/* Mobile selected label */}
-                    <div className="mt-3 md:hidden">
-                      {getAnswerForQuestion(question.id) !== undefined && (
-                        <div className="text-xs text-blue-600 font-medium">
+                    {/* Selected option display */}
+                    {getAnswerForQuestion(question.id) !== undefined && (
+                      <div className="text-center">
+                        <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium animate-in fade-in duration-200">
                           選択中: {answerOptions.find(opt => opt.value === getAnswerForQuestion(question.id))?.label}
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -148,24 +128,32 @@ export function QuestionGroup({
             variant="outline"
             onClick={onPrevious}
             disabled={!canGoPrevious}
-            className="min-w-24"
+            className="min-w-24 px-6 py-3"
           >
-            前へ
+            ← 前へ
           </Button>
           
-          <div className="text-sm text-gray-600">
-            {canGoNext ? 
-              '次のページに進む' : 
-              'すべての質問に回答してください'
-            }
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-1">
+              {canGoNext ? 
+                '全ての質問に回答したら次のページへ' : 
+                'すべての質問に回答してください'
+              }
+            </div>
+            <div className="text-xs text-gray-400">
+              {questions.filter(q => getAnswerForQuestion(q.id) !== undefined).length}/{questions.length} 問回答済み
+            </div>
           </div>
           
           <Button
             onClick={onNext}
             disabled={!canGoNext}
-            className="min-w-24"
+            className={cn(
+              "min-w-24 px-6 py-3",
+              !canGoNext && "opacity-50 cursor-not-allowed"
+            )}
           >
-            {currentPage === totalPages ? '結果を見る' : '次へ'}
+            {currentPage === totalPages ? '結果を見る' : '次へ'} →
           </Button>
         </div>
       </div>
