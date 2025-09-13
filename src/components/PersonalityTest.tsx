@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { QuestionCard } from './forms/QuestionCard';
+import { QuestionGroup } from './forms/QuestionGroup';
 import { ResultsPage } from './ResultsPage';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/Card';
@@ -12,47 +12,57 @@ import { Header } from './layout/Header';
 
 export function PersonalityTest() {
   const [currentStep, setCurrentStep] = useState<'intro' | 'test' | 'results'>('intro');
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [result, setResult] = useState<PersonalityResult | null>(null);
 
-  // Handle answer submission
-  const handleAnswerChange = (value: AnswerValue) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    const newAnswer: Answer = {
-      questionId: currentQuestion.id,
-      value
-    };
-
-    // Update answers array
-    const updatedAnswers = answers.filter(a => a.questionId !== currentQuestion.id);
-    updatedAnswers.push(newAnswer);
-    setAnswers(updatedAnswers);
-
-    // Auto-advance to next question after a short delay
-    setTimeout(() => {
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-      } else {
-        // Test completed, calculate results
-        const personalityResult = calculatePersonalityType(updatedAnswers);
-        setResult(personalityResult);
-        setCurrentStep('results');
-      }
-    }, 300);
+  // ページング設定
+  const QUESTIONS_PER_PAGE = 5;
+  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+  
+  // 現在のページの質問を取得
+  const getCurrentPageQuestions = () => {
+    const startIndex = currentPageIndex * QUESTIONS_PER_PAGE;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, questions.length);
+    return questions.slice(startIndex, endIndex);
+  };
+  
+  // 現在のページが完了しているかチェック
+  const isCurrentPageComplete = () => {
+    const currentQuestions = getCurrentPageQuestions();
+    return currentQuestions.every(q => 
+      answers.some(a => a.questionId === q.id)
+    );
   };
 
-  // Get current answer for the question
-  const getCurrentAnswer = (): AnswerValue | undefined => {
-    const currentQuestion = questions[currentQuestionIndex];
-    const answer = answers.find(a => a.questionId === currentQuestion.id);
-    return answer?.value;
+  // Handle answer changes for the current page
+  const handleAnswersChange = (newAnswers: Answer[]) => {
+    setAnswers(newAnswers);
+  };
+
+  // Handle next page navigation
+  const handleNext = () => {
+    if (currentPageIndex < totalPages - 1) {
+      setCurrentPageIndex(prev => prev + 1);
+    } else {
+      // 最終ページ → 結果計算
+      const personalityResult = calculatePersonalityType(answers);
+      setResult(personalityResult);
+      setCurrentStep('results');
+    }
+  };
+
+  // Handle previous page navigation
+  const handlePrevious = () => {
+    if (currentPageIndex > 0) {
+      setCurrentPageIndex(prev => prev - 1);
+    }
   };
 
   // Reset test
   const resetTest = () => {
     setCurrentStep('intro');
-    setCurrentQuestionIndex(0);
+    setCurrentPageIndex(0);
     setAnswers([]);
     setResult(null);
   };
@@ -157,12 +167,16 @@ export function PersonalityTest() {
     return (
       <>
         <Header />
-        <QuestionCard
-          question={questions[currentQuestionIndex]}
-          currentPage={currentQuestionIndex + 1}
-          totalPages={questions.length}
-          value={getCurrentAnswer()}
-          onValueChange={handleAnswerChange}
+        <QuestionGroup
+          questions={getCurrentPageQuestions()}
+          currentPage={currentPageIndex + 1}
+          totalPages={totalPages}
+          answers={answers}
+          onAnswersChange={handleAnswersChange}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          canGoNext={isCurrentPageComplete()}
+          canGoPrevious={currentPageIndex > 0}
         />
       </>
     );
