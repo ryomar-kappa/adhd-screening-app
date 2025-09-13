@@ -339,7 +339,6 @@ adhd-diagnostic-app/
 
 ### 🛠️ 技術文書
 
-- [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [Vercel Platform Documentation](https://vercel.com/docs)
