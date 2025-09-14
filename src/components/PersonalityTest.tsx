@@ -9,6 +9,7 @@ import { Answer, PersonalityResult } from '../types';
 import { calculatePersonalityType } from '../utils/scoring';
 import { Header } from './layout/Header';
 import { SEOHead } from './layout/SEOHead';
+import { AdmaxMainAd } from './ads/AdmaxAd';
 import { createMedicalWebPageSchema, createWebsiteSchema, createMedicalTestSchema } from '../utils/structuredData';
 
 export function PersonalityTest() {
@@ -202,6 +203,11 @@ export function PersonalityTest() {
                   <li>• このツールは医学的診断の代替となるものではありません</li>
                 </ul>
               </div>
+            </div>
+
+            {/* 広告 */}
+            <div className="mt-8 flex justify-center">
+              <AdmaxMainAd className="max-w-md" />
             </div>
           </div>
         </div>

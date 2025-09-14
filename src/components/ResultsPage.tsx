@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import { Progress } from './ui/Progress';
 import { PersonalityResult } from '../types';
 import { RotateCcw, AlertTriangle, Brain, Activity, Zap, Heart, Download } from 'lucide-react';
+import { AdmaxMainAd } from './ads/AdmaxAd';
 
 interface ResultsPageProps {
   result: PersonalityResult;
@@ -245,6 +246,11 @@ export function ResultsPage({ result, onRestart }: ResultsPageProps) {
               ADHDの症状は個人差が大きく、専門的な評価が重要です。
               心配な症状がある場合は、必ず医療専門家にご相談ください。
             </p>
+          </div>
+
+          {/* 広告 */}
+          <div className="mt-8 flex justify-center">
+            <AdmaxMainAd className="max-w-md" />
           </div>
         </div>
       </div>

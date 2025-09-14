@@ -1,0 +1,48 @@
+/* Admax広告専用CSS */
+
+.admax-container {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.admax-ad {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  position: relative;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 640px) {
+  .admax-container {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .admax-container {
+    max-width: 350px;
+  }
+}
+
+/* 広告が読み込まれた後のスタイル調整 */
+.admax-ad script,
+.admax-ad iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 広告読み込み中のプレースホルダー */
+.admax-ad:empty::before {
+  content: "広告読み込み中...";
+  color: #9ca3af;
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
